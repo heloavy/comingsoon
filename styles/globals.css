@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .headline {
+    font-size: clamp(2rem, 4vw, 3rem);
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .subtext {
+    font-size: clamp(0.875rem, 1.2vw, 1rem);
+    padding: 0 1.5rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .countdown-timer {
+    position: relative;
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 400px;
+    padding: 1rem 0;
+  }
+
+  .timer-unit {
+    min-width: 40px;
+    margin: 0 0.5rem;
+  }
+
+  .timer-value {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .timer-label {
+    font-size: 0.6rem;
+    margin-top: 0.25rem;
+  }
+
+  .top-desc,
+  .bottom-desc {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .headline {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    margin-bottom: 1rem;
+  }
+
+  .waitlist-btn {
+    padding: 12px 24px;
+    font-size: 0.875rem;
+    margin-top: 1.5rem;
+  }
+
+  .coming-soon-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .bottom-section {
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .feature-block {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 0.5rem 0;
+  }
+
+  .feature-block h5 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #000;
+  }
+
+  .feature-block h6 {
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.7);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .bottom-section {
+      margin-top: 3rem;
+      gap: 1rem;
+    }
+
+    .feature-block {
+      padding: 1rem;
+    }
+
+    .feature-block h5 {
+      font-size: 1.1rem;
+    }
+
+    .feature-block h6 {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.ai-integration-block,
+.limitless-experiences-block {
+  margin-bottom: 2.5rem;
+  margin-top: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .ai-integration-block,
+  .limitless-experiences-block {
+    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
+  }
+}
