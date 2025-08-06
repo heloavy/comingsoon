@@ -74,12 +74,17 @@ const SphereAnimation = () => {
       setSubmitStatus('Error: Something went wrong. Please try again.');
     }
   };
+
   useEffect(() => {
     const calculateTimeLeft = () => {
+      // The target date and time in IST (UTC+5:30)
+      const targetDate = new Date('2025-08-24T10:30:00+05:30');
+      
+      // The user's current time
       const now = new Date();
-      const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
-      const targetDate = new Date('2025-08-07T08:00:00+05:30'); // 8 AM IST on August 7th, 2025
-      const difference = targetDate - istTime;
+  
+      // Calculate the difference in milliseconds. JavaScript handles the timezones automatically.
+      const difference = targetDate - now;
       
       if (difference <= 0) {
         setTimeLeft({
