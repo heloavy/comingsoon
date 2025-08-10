@@ -1,16 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import Head from 'next/head';
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client outside of component
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
-
-// Fixed target date: August 7th, 2025, 8:00 AM IST (2:30 AM UTC)
-const TARGET_TIMESTAMP = 1754326200000;
+import styles from '../styles/overlay.module.css';
+import LandingOverlay from '../components/LandingOverlay';
 
 const SphereAnimation = () => {
   const mountRef = useRef(null);
@@ -20,70 +11,17 @@ const SphereAnimation = () => {
   const spheresRef = useRef([]);
   const groupRef = useRef(null);
   const animationIdRef = useRef(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState('');
   const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
+    days: 0, hours: 0,
     minutes: 0,
     seconds: 0
   });
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    found_us: '',  
-    work: ''
-  });
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitStatus('Submitting...');
-    const { name, email, found_us, work } = formData;
-    try {
-      const { error } = await supabase
-        .from('waitlist')
-        .insert([{ name, email, found_us, work }]);
-      if (error) {
-        if (error.code === '23505') {
-          setSubmitStatus('This email is already on the waitlist.');
-        } else {
-          setSubmitStatus('Error: Something went wrong. Please try again.');
-        }
-      } else {
-        setSubmitStatus('Thank you for joining our waitlist!');
-        setFormData({
-          name: '',
-          email: '',
-          found_us: '',
-          work: ''
-        });
-        setTimeout(() => {
-          setIsModalOpen(false);
-          setSubmitStatus('');
-        }, 2000);
-      }
-    } catch (error) {
-      setSubmitStatus('Error: Something went wrong. Please try again.');
-    }
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      // The target date and time in IST (UTC+5:30)
       const targetDate = new Date('2025-08-24T10:30:00+05:30');
-      
-      // The user's current time
       const now = new Date();
-  
-      // Calculate the difference in milliseconds. JavaScript handles the timezones automatically.
       const difference = targetDate - now;
       
       if (difference <= 0) {
@@ -108,6 +46,7 @@ const SphereAnimation = () => {
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
   }, []);
+
   const radii = [
     1, 0.6, 0.8, 0.4, 0.9, 0.7, 0.9, 0.3, 0.2, 0.5,
     0.6, 0.4, 0.5, 0.6, 0.7, 0.3, 0.4, 0.8, 0.7, 0.5,
@@ -520,22 +459,7 @@ const SphereAnimation = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-screen bg-white relative overflow-hidden">
-      <Head>
-      <title>Heloavy | Futuristic & AI-Powered Web & Software Development - Coming Soon</title>
-        <meta name="description" content="Heloavy is launching soon: your partner for custom software solutions, futuristic websites, and advanced software with personalized AI integration for both web and applications." />
-        <meta name="keywords" content="futuristic software, AI-powered web development, custom software solutions, personalized AI integration, advanced applications, innovative websites, software company, bespoke software, digital transformation, Heloavy, coming soon" />
-        <meta property="og:title" content="Heloavy - Futuristic & AI-Powered Web & Software Development" />
-        <meta property="og:description" content="Heloavy is building cutting-edge custom and AI-integrated futuristic websites and software for a new era of digital experiences." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://heloavy.com" />
-        <meta property="og:image" content="https://heloavy.com/preview-image.jpg" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <meta name="theme-color" content="#7F00FF" />
-        <link rel="canonical" href="https://heloavy.com" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
+    <div className="w-full min-h-screen bg-white relative">
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -546,24 +470,265 @@ const SphereAnimation = () => {
           -webkit-tap-highlight-color: transparent;
         }
         
-        body {
+        html, body {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          overflow-x: hidden;
           background-color: #fefefe;
+          overflow-x: hidden;
+          height: 100%;
           touch-action: manipulation;
         }
-        
-        .coming-soon-container {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          text-align: center;
-          width: 100%;
-          max-width: 800px;
-          padding: 0 20px;
-          z-index: 20;
-          pointer-events: none;
+
+        /* DESKTOP STYLES - Keep unchanged */
+        @media (min-width: 769px) {
+          html, body {
+            overflow: hidden;
+          }
+
+          /* Hide mobile container on desktop */
+          .mobile-container {
+            display: none !important;
+          }
+
+          .mobile-canvas-container {
+            display: none !important;
+          }
+
+          .coming-soon-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
+            z-index: 20;
+            pointer-events: none;
+          }
+          
+          .countdown-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: auto;
+            max-width: 280px;
+            text-align: center;
+          }
+
+          .top-desc {
+            position: absolute;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+            padding: 0 15px;
+          }
+
+          .bottom-desc {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            padding: 0 40px;
+            z-index: 10;
+            justify-content: space-between;
+            max-width: 1200px;
+          }
+
+          .text-backdrop {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            height: auto;
+            min-height: 350px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 15px;
+            z-index: 15;
+            pointer-events: none;
+            padding: 20px;
+          }
+        }
+
+        /* MOBILE STYLES - Complete restructure */
+        @media (max-width: 768px) {
+          html, body {
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: auto;
+          }
+
+          /* Hide desktop elements on mobile */
+          .text-backdrop,
+          .coming-soon-container,
+          .countdown-timer,
+          header,
+          .banner,
+          .top-desc,
+          .bottom-desc {
+            display: none !important;
+          }
+
+          .mobile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 0;
+            z-index: 30;
+            position: relative;
+            background: transparent;
+            overflow-y: auto;
+          }
+
+          .mobile-header {
+            width: 100%;
+            text-align: center;
+            padding: 20px 15px 10px;
+            z-index: 25;
+            background: transparent;
+          }
+
+          .mobile-brand {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #000;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+            margin-bottom: 15px;
+            display: block;
+          }
+
+          .mobile-top-desc {
+            text-align: center;
+            padding: 0 20px;
+            margin-bottom: 20px;
+          }
+
+          .mobile-top-desc h5 {
+            font-size: 0.85rem;
+            color: rgba(0,0,0,0.8);
+            font-weight: 500;
+            margin-bottom: 4px;
+            line-height: 1.4;
+          }
+
+          .mobile-top-desc h6 {
+            font-size: 0.75rem;
+            color: rgba(0,0,0,0.6);
+            font-weight: 400;
+            line-height: 1.3;
+          }
+
+          .mobile-countdown {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 0 15px 30px;
+            text-align: center;
+            z-index: 25;
+          }
+
+          .mobile-countdown h3 {
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+          }
+
+          .mobile-coming-soon {
+            text-align: center;
+            padding: 0 20px;
+            margin-bottom: 40px;
+            z-index: 25;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 25px 20px;
+            margin: 0 15px 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+          }
+
+          .mobile-features {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 0 15px;
+            width: 100%;
+            margin-bottom: 60px;
+            z-index: 25;
+          }
+
+          .mobile-feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+          }
+
+          .mobile-feature-icon {
+            font-size: 1.5rem;
+            color: #7F00FF;
+            margin-top: 2px;
+            flex-shrink: 0;
+          }
+
+          .mobile-feature-content h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 6px;
+            line-height: 1.3;
+          }
+
+          .mobile-feature-content h6 {
+            font-size: 0.85rem;
+            color: rgba(0,0,0,0.7);
+            line-height: 1.4;
+            font-weight: 400;
+          }
+
+          .mobile-canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: auto;
+          }
         }
         
         .headline {
@@ -627,28 +792,10 @@ const SphereAnimation = () => {
         .waitlist-btn:hover::after {
           transform: translateX(100%);
         }
-        
-        .countdown-timer {
-          position: fixed;
-          top: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 10;
-          background: rgba(255, 255, 255, 0.95);
-          padding: 12px 20px;
-          border-radius: 12px;
-          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          width: 90%;
-          max-width: 400px;
-          text-align: center;
-        }
-        
+
         .countdown-timer h3 {
-          font-size: 0.9rem;
-          margin-bottom: 10px;
+          font-size: 0.8rem;
+          margin-bottom: 8px;
           color: #333;
           font-weight: 500;
         }
@@ -656,24 +803,24 @@ const SphereAnimation = () => {
         .timer-digits {
           display: flex;
           justify-content: center;
-          gap: 10px;
+          gap: 8px;
         }
         
         .timer-unit {
           text-align: center;
-          min-width: 50px;
+          min-width: 40px;
           flex: 1;
         }
         
         .timer-value {
-          font-size: 1.4rem;
+          font-size: 1.1rem;
           font-weight: 600;
           color: #000;
           margin-bottom: 2px;
         }
         
         .timer-label {
-          font-size: 0.7rem;
+          font-size: 0.65rem;
           color: #666;
           text-transform: uppercase;
           letter-spacing: 0.05em;
@@ -714,16 +861,6 @@ const SphereAnimation = () => {
           width: 100%;
         }
         
-        .top-desc {
-          position: absolute;
-          top: 70px;
-          left: 0;
-          width: 100%;
-          text-align: center;
-          z-index: 10;
-          padding: 0 15px;
-        }
-        
         .top-desc h5 {
           font-size: 0.9rem;
           color: rgba(0,0,0,0.8);
@@ -737,19 +874,6 @@ const SphereAnimation = () => {
           font-weight: 400;
         }
         
-        .bottom-desc {
-          position: fixed;
-          bottom: 20px;
-          left: 0;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 20px;
-          padding: 0 20px;
-          z-index: 10;
-        }
-        
         .left-desc, .right-desc {
           display: flex;
           align-items: center;
@@ -757,11 +881,10 @@ const SphereAnimation = () => {
           background: rgba(255, 255, 255, 0.8);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          padding: 12px 20px;
+          padding: 15px 25px;
           border-radius: 12px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-          width: 100%;
-          max-width: 350px;
+          max-width: 300px;
           justify-content: center;
         }
         
@@ -784,24 +907,6 @@ const SphereAnimation = () => {
         .rotated-text {
           display: none;
         }
-        
-        .text-backdrop {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 90%;
-          max-width: 800px;
-          height: auto;
-          min-height: 350px;
-          background: rgba(255,255,255,0.7);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border-radius: 15px;
-          z-index: 15;
-          pointer-events: none;
-          padding: 20px;
-        }
 
         /* Modal Styles */
         .modal {
@@ -816,6 +921,7 @@ const SphereAnimation = () => {
           -webkit-backdrop-filter: blur(12px);
           animation: modalFadeIn 0.3s ease-out;
           padding: 20px;
+          overflow: hidden;
         }
         
         @keyframes modalFadeIn {
@@ -837,7 +943,7 @@ const SphereAnimation = () => {
           padding: 30px;
           max-width: 500px;
           width: 100%;
-          max-height: 200vh;
+          max-height: 80vh;
           overflow-y: auto;
           box-shadow: 
             0 20px 40px rgba(0, 0, 0, 0.15),
@@ -1037,69 +1143,28 @@ const SphereAnimation = () => {
           color: rgba(0, 0, 0, 0.7);
         }
 
-        @media (min-width: 768px) {
-          .countdown-timer {
-            top: 30px;
-            left: auto;
-            right: 30px;
-            transform: none;
-            width: auto;
+        /* Mobile headline and subtext adjustments */
+        @media (max-width: 768px) {
+          .mobile-coming-soon .headline {
+            font-size: clamp(1.8rem, 7vw, 2.8rem);
+            margin-bottom: 0.8rem;
+          }
+
+          .mobile-coming-soon .subtext {
+            font-size: clamp(0.85rem, 3.5vw, 1.1rem);
+            margin-bottom: 1.5rem;
             max-width: none;
-            padding: 15px 25px;
-          }
-          
-          .timer-digits {
-            gap: 15px;
-          }
-          
-          .timer-unit {
-            min-width: 60px;
-          }
-          
-          .timer-value {
-            font-size: 1.5rem;
-          }
-          
-          .timer-label {
-            font-size: 0.75rem;
-          }
-          
-          .top-desc {
-            top: 90px;
             padding: 0;
           }
-          
-          .top-desc h5 {
-            font-size: 1rem;
-          }
-          
-          .top-desc h6 {
+
+          .mobile-coming-soon .waitlist-btn {
+            padding: 12px 28px;
             font-size: 0.9rem;
-          }
-          
-          .bottom-desc {
-            flex-direction: row;
-            justify-content: space-between;
-            bottom: 40px;
-            padding: 0 40px;
-          }
-          
-          .left-desc, .right-desc {
-            max-width: 300px;
-            padding: 15px 25px;
-          }
-          
-          .modal-content {
-            padding: 40px;
-            border-radius: 20px;
-          }
-          
-          .modal-header {
-            font-size: 2rem;
           }
         }
       `}</style>
 
+      {/* Desktop Layout */}
       <div className="text-backdrop"></div>
 
       <div className="countdown-timer">
@@ -1140,14 +1205,14 @@ const SphereAnimation = () => {
             <div className="left-desc">
               <h1>◦</h1>
               <div className="desc-inner">
-              <h5 className="ai-integration-block">Personalized AI Integration & Smart Automation</h5>
+                <h5>Personalized AI Integration & Smart Automation</h5>
                 <h6>Driving Innovation with Data-Driven Insights & Intelligent Systems</h6>
               </div>
             </div>
             <div className="right-desc">
               <h1>∞</h1>
               <div className="desc-inner">
-                <h5 className="limitless-experiences-block">Limitless Digital Experiences</h5>
+                <h5>Limitless Digital Experiences</h5>
                 <h6>Bespoke Software & Advanced Web Solutions by Heloavy</h6>
               </div>
             </div>
@@ -1163,90 +1228,78 @@ const SphereAnimation = () => {
           onClick={() => setIsModalOpen(true)}
         >
           Join Waitlist
-        </button>
+        </button> 
       </div>
+
+      {/* Mobile Layout */}
+      <div className="mobile-container">
+        <div className="mobile-header">
+          <a href="#" className="mobile-brand">HELOAVY</a>
+          <div className="mobile-top-desc">
+            <h5>Futuristic Websites & Software Solutions for Brands & Startups</h5>
+            <h6>Seamlessly Integrating Personalized AI | Built by Heloavy</h6>
+          </div>
+        </div>
+
+        <div className="mobile-countdown">
+          <h3>Launching In</h3>
+          <div className="timer-digits">
+            <div className="timer-unit">
+              <div className="timer-value">{timeLeft.days}</div>
+              <div className="timer-label">Days</div>
+            </div>
+            <div className="timer-unit">
+              <div className="timer-value">{timeLeft.hours}</div>
+              <div className="timer-label">Hours</div>
+            </div>
+            <div className="timer-unit">
+              <div className="timer-value">{timeLeft.minutes}</div>
+              <div className="timer-label">Mins</div>
+            </div>
+            <div className="timer-unit">
+              <div className="timer-value">{timeLeft.seconds}</div>
+              <div className="timer-label">Secs</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mobile-coming-soon">
+          <h1 className="headline">HELLO FUTURE. COMING SOON.</h1>
+          <p className="subtext">Custom software, personalized AI, and intelligent web solutions for the digital future.</p>
+          <button 
+            className="waitlist-btn"
+            onClick={() => setIsModalOpen(true)}
+          >
+            Join Waitlist
+          </button>
+        </div>
+
+        <div className="mobile-features">
+          <div className="mobile-feature-card">
+            <div className="mobile-feature-icon">◦</div>
+            <div className="mobile-feature-content">
+              <h5>Personalized AI Integration & Smart Automation</h5>
+              <h6>Driving Innovation with Data-Driven Insights & Intelligent Systems</h6>
+            </div>
+          </div>
+          
+          <div className="mobile-feature-card">
+            <div className="mobile-feature-icon">∞</div>
+            <div className="mobile-feature-content">
+              <h5>Limitless Digital Experiences</h5>
+              <h6>Bespoke Software & Advanced Web Solutions by Heloavy</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Canvas Container */}
+      <div className="mobile-canvas-container"></div>
 
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <button className="close-btn" onClick={() => setIsModalOpen(false)}>×</button>
-            <div className="modal-header">Join Our Waitlist</div>
-            <p className="modal-subheader">Be the first to know when we launch our revolutionary AI-powered software and web development platform.</p>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="form-input"
-                  placeholder="Your name"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="form-input"
-                  placeholder="your@email.com"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">How did you hear about us?</label>
-                <select
-                    name="found_us"
-                    value={formData.found_us}
-                    onChange={handleInputChange}
-                    required
-                    className="form-select"
-                  >
-                  <option value="">Select an option</option>
-                  <option value="social">Social Media</option>
-                  <option value="search">Search Engine</option>
-                  <option value="referral">Friend/Colleague</option>
-                  <option value="event">Event/Conference</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">What do you do?</label>
-                <input
-                  type="text"
-                  name="work"
-                  value={formData.work}
-                  onChange={handleInputChange}
-                  required
-                  className="form-input"
-                  placeholder="Your profession/role"
-                />
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="modal-btn cancel"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="modal-btn submit"
-                >
-                  Join Waitlist
-                </button>
-              </div>
-              {submitStatus && (
-                <div className={`status-message ${submitStatus.includes('Error') ? 'error' : 'success'}`}>
-                  {submitStatus}
-                </div>
-              )}
-            </form>
+            <LandingOverlay onClose={() => setIsModalOpen(false)} />
           </div>
         </div>
       )}

@@ -28,17 +28,10 @@ body {
     line-height: 1.6;
   }
 
-  .countdown-timer {
-    position: relative;
-    margin: 2rem auto;
-    width: 90%;
+  .countdown-timer{
+    transform: none;
+    z-index: 10;
     max-width: 400px;
-    padding: 1rem 0;
-  }
-
-  .timer-unit {
-    min-width: 40px;
-    margin: 0 0.5rem;
   }
 
   .timer-value {
@@ -53,8 +46,30 @@ body {
 
   .top-desc,
   .bottom-desc {
-    display: none;
-  }
+ }
+}
+
+.countdown-timer {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  transform: none;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: auto;
+  max-width: 400px;
+  text-align: center;
+}
+
+.timer-unit {
+ min-width: 40px;
+ margin: 0 0.5rem;
 }
 
 @media (max-width: 480px) {
@@ -102,7 +117,7 @@ body {
     line-height: 1.5;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767px) {
     .bottom-section {
       margin-top: 3rem;
       gap: 1rem;
@@ -134,4 +149,9 @@ body {
     margin-bottom: 1.5rem;
     margin-top: 1.5rem;
   }
+}
+
+.modal-content {
+  overflow-y: auto;
+  max-height: 90vh;
 }
