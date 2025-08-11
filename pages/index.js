@@ -11,10 +11,11 @@ const SphereAnimation = () => {
   const spheresRef = useRef([]);
   const groupRef = useRef(null);
   const animationIdRef = useRef(null);
+  const modalContentRef = useRef(null); // Moved useRef outside useState
   const [timeLeft, setTimeLeft] = useState({
     days: 0, hours: 0,
     minutes: 0,
-    seconds: 0
+ seconds: 0
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -195,6 +196,9 @@ const SphereAnimation = () => {
     let rotation = { x: 0, y: 0 };
 
     const handleTouchStart = (event) => {
+ if (window.innerWidth <= 768 && !event.target.closest('canvas')) {
+ return;
+ }
       isDragging = true;
       previousMousePosition = { 
         x: event.touches[0].clientX, 
@@ -204,6 +208,9 @@ const SphereAnimation = () => {
     };
 
     const handleTouchMove = (event) => {
+ if (window.innerWidth <= 768 && !event.target.closest('canvas')) {
+ return;
+ }
       if (isDragging) {
         const deltaMove = {
           x: event.touches[0].clientX - previousMousePosition.x,
@@ -226,6 +233,27 @@ const SphereAnimation = () => {
     const handleTouchEnd = () => {
       isDragging = false;
     };
+    const handleModalTouchStart = (event) => {
+      if (modalContentRef.current && event.target === modalContentRef.current || modalContentRef.current.contains(event.target)) {
+        initialTouchY = event.touches[0].clientY;
+      }
+    };
+
+    const handleModalTouchMove = (event) => {
+      if (modalContentRef.current && initialTouchY !== null) {
+        const currentTouchY = event.touches[0].clientY;
+        const deltaY = initialTouchY - currentTouchY;
+        modalContentRef.current.scrollTop += deltaY;
+        initialTouchY = currentTouchY;
+        event.preventDefault(); // Prevent default scroll behavior
+ event.stopPropagation(); // Prevent event from propagating to main page
+      }
+    };
+
+    const handleModalTouchEnd = () => {
+      initialTouchY = null;
+    };
+
 
     const handleMouseDown = (event) => {
       isDragging = true;
@@ -275,9 +303,11 @@ const SphereAnimation = () => {
     };
 
     renderer.domElement.addEventListener('mousedown', handleMouseDown);
-    renderer.domElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+ renderer.domElement.addEventListener('touchstart', handleTouchStart, { passive: false });
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+ window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    // Add touch listeners for modal
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('touchend', handleTouchEnd);
 
@@ -432,9 +462,11 @@ const SphereAnimation = () => {
       }
       
       renderer.domElement.removeEventListener('mousedown', handleMouseDown);
-      renderer.domElement.removeEventListener('touchstart', handleTouchStart);
+ renderer.domElement.removeEventListener('touchstart', handleTouchStart, { passive: false });
       window.removeEventListener('mousemove', handleMouseMove);
+      // Remove touchmove and touchend listeners
       window.removeEventListener('touchmove', handleTouchMove);
+ window.removeEventListener('touchmove', handleTouchMove, { passive: false });
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('touchend', handleTouchEnd);
       window.removeEventListener('resize', handleResize);
@@ -476,6 +508,7 @@ const SphereAnimation = () => {
           overflow-x: hidden;
           height: 100%;
           touch-action: manipulation;
+
         }
 
         /* DESKTOP STYLES - Keep unchanged */
@@ -573,8 +606,10 @@ const SphereAnimation = () => {
         @media (max-width: 768px) {
           html, body {
             overflow-x: hidden;
-            overflow-y: auto;
-            height: auto;
+ overflow-y: auto !important;
+            height: auto !important;
+ touch-action: pan-y !important;
+            -webkit-overflow-scrolling: touch;
           }
 
           /* Hide desktop elements on mobile */
@@ -598,7 +633,9 @@ const SphereAnimation = () => {
             z-index: 30;
             position: relative;
             background: transparent;
-            overflow-y: auto;
+            overflow-y: auto !important;
+ touch-action: pan-y !important;
+ -webkit-overflow-scrolling: touch;
           }
 
           .mobile-header {
@@ -728,7 +765,15 @@ const SphereAnimation = () => {
             height: 100%;
             z-index: 1;
             pointer-events: auto;
+            pointer-events: none !important;
+            touch-action: none !important;
           }
+
+        .modal-content > div {
+          display: flex;
+          flex-direction: column;
+          flex-shrink: 0;
+        }
         }
         
         .headline {
@@ -918,7 +963,6 @@ const SphereAnimation = () => {
           justify-content: center;
           z-index: 100;
           backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
           animation: modalFadeIn 0.3s ease-out;
           padding: 20px;
           overflow: hidden;
@@ -952,6 +996,8 @@ const SphereAnimation = () => {
           animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
           position: relative;
         }
+
+
         
         @keyframes modalSlideIn {
           from {
@@ -1298,7 +1344,7 @@ const SphereAnimation = () => {
 
       {isModalOpen && (
         <div className="modal">
-          <div className="modal-content">
+          <div ref={modalContentRef} className="modal-content">
             <LandingOverlay onClose={() => setIsModalOpen(false)} />
           </div>
         </div>
