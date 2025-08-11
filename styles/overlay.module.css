@@ -17,5 +17,14 @@
 @media (max-width: 768px) {
     .landing-overlay {
         padding: 10px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
 }
+
+.form-container {
+    max-height: 80vh; /* Adjust as needed */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 }

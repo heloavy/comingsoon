@@ -11,7 +11,9 @@ const LandingOverlay = ({ onClose }) => {
         <h1 className="modal-header">Be one of the first 200 businesses to sign up and get a free year of Heloavy!</h1>
         <p className="modal-subheader">Heloavy: Your on-demand AI development partner.</p>
         <div className="form-area"> {/* Add a container for the form if needed for specific styling */}
-          <WaitlistForm onClose={onClose} />
+          <div className="form-container">
+ <WaitlistForm onClose={onClose} />
+          </div>
         </div>
       </div>
  {/* The submit button and status message will be rendered within WaitlistForm */}

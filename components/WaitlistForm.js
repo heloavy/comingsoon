@@ -1,17 +1,10 @@
 import { useState } from 'react';
 import { CheckCircle, Mail, User, Search, Briefcase, UserPlus, Loader2 } from 'lucide-react';
-
 import React from 'react';
-// Mock Supabase client for demo purposes
-const mockSupabase = {
-  from: () => ({
-    insert: (data) => new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ data: data, error: null });
-      }, 1500);
-    })
-  })
-};
+import { createClient } from '@supabase/supabase-js';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 function WaitlistForm({ onClose }) {
   const [formData, setFormData] = useState({
@@ -34,7 +27,7 @@ function WaitlistForm({ onClose }) {
     setSubmitMessage('Submitting...');
 
     try {
-      const { data, error } = await mockSupabase
+      const { data, error } = await supabase
         .from('waitlist')
         .insert([
           {
